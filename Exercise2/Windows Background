@@ -1,0 +1,49 @@
+PImage img1, img2, img3, img4, img5;
+int x, y, x2, y2;
+float x3, y3;
+
+void setup() {
+  size (800, 600, P2D);
+  frameRate(60);
+  img1 = loadImage("bg.png");
+  img2 = loadImage("cloud.png");
+  img3 = loadImage("dig.gif");
+  img4 = loadImage("bird1.png");
+  img5 = loadImage("bird2.png");
+}
+
+void draw() {
+  image(img2, x2, x2);
+  image(img1, x, y);
+  image(img3, 900+x, 750+y);
+  image(img4, x3+100, y3+75);
+  image(img5, x3, y3+25);
+  x3+=3;
+  if(x3 > 900){
+    x3=-300;
+  }
+}
+
+void keyPressed() {
+  println(x + " " + y);
+  if(keyPressed && key == 'w' && y < 0 && y2 < 0){
+    y+=25;
+    y2+=50;
+    y3+=25;
+  }
+  if(keyPressed && key == 's' && y >-350 && y2 >-700){
+    y-=25;
+    y2-=50;
+    y3-=25;
+  }
+  if(keyPressed && key == 'a' && x < 0 && x2 < 0){
+    x+=25;
+    x2+=50;
+    x3+=25;
+  }
+  if(keyPressed && key == 'd' && x >-400 && x2 >-800){
+    x-=25;
+    x2-=50;
+    x3-=25;
+  }
+}
