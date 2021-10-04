@@ -1,0 +1,265 @@
+//Some notes
+//Char moves only when you hold mouse or whenever you don't use mouse
+//Char will not move towards the target location otherwise it will just be a 
+//border that determines the direction of the gif animation
+//The character models are from a game I like
+//45 is the character you control
+//G is the character that looks sleepy
+//HK is the character doing a pose
+//9 is the normal looking one
+String[] imgl = {"0l.gif", "1l.gif", "2l.gif", "3l.gif", "4l.gif", "5l.gif", "6l.gif", "7l.gif", "8l.gif", "9l.gif"};
+String[] imgr = {"0r.gif", "1r.gif", "2r.gif", "3r.gif", "4r.gif", "5r.gif", "6r.gif", "7r.gif", "8r.gif", "9r.gif"};
+PImage[] imgL = new PImage[imgl.length];
+PImage[] imgR = new PImage[imgr.length];
+PImage current, ump, hk, g;
+PVector pos, target, vel45, velHK, velG, vel9, loc9, locHK, locG;
+float mx, my, speed = 0.05, save1, save2, save3, save4;
+boolean debug = false, left = false, right = true;
+boolean nearUMP = false, nearHK = false, nearG;
+int delay = 0, counterHK = 0, counterG, counter9;
+
+class Char {
+  Char(float x, float y){
+    pos = new PVector(x, y);
+    target = new PVector(x, y);
+    
+    //loads in all the images necessary for animation
+    for (int i = 0; i < imgL.length; i++){
+      imgL[i] = loadImage(imgl[i]);
+    }
+    for (int i = 0; i < imgR.length; i++){
+      imgR[i] = loadImage(imgr[i]);
+    }
+    
+    ump = loadImage("45.png");
+    hk = loadImage("416.png");
+    g = loadImage("11.png");
+    ump.resize(100, 178);
+    hk.resize(130, 178);
+    g.resize(130, 124);
+    
+    //Spawns the other three 
+    loc9 = new PVector(400+random(-200, 200), 300+random(-150, 150));
+    locHK = new PVector(400+random(-200, 200), 300+random(-150, 150));
+    locG = new PVector(400+random(-200, 200), 300+random(-150, 150));
+    vel9 = new PVector(random(-2.5, 2.5)*2, random(-2.5, 2.5)*2);
+    velHK = new PVector(random(-3, 4)*2.5, random(-4, 3)*2.5);
+    velG = new PVector(random(-1.1, 1.1)*1.5, random(-1.1, 1.1)*1.5);
+    vel45 = new PVector(random(-5, 5)*1.5, random(-5, 5)*1.5);
+    
+    current = imgR[0];
+  }
+  
+  void update(){
+    //Moves Char to clicked or held location
+    if (mousePressed){
+       newLocation();
+       pos = pos.lerp(target, speed).add(new PVector());
+    }
+    
+    //Detects whether or not Char is getting too close
+    nearUMP = pos.dist(loc9) < 100;
+    nearHK = pos.dist(locHK) < 150;
+    nearG = pos.dist(locG) < 100;
+    
+    //Slows you down
+    if (nearG){
+      mousePressed = false;
+      vel45 = new PVector(random(-1, 1), random(-1, 1));
+      stroke(200);
+      fill(255, 255, 255);
+      rect(pos.x-40, pos.y-90, 80, 40, 10);
+      fill(75,255,75);
+      textSize(20);
+      text("zZ zZz", pos.x-35, pos.y-65);
+    }
+    //Sends you to opposite of HK
+    else if (nearHK&&nearUMP){textSize(20);
+      mousePressed = false;
+      vel45 = new PVector(velHK.x*-1, velHK.y*-1);
+      stroke(200);
+      fill(255, 255, 255);
+      rect(pos.x-10, pos.y-90, 40, 40, 10);
+      fill(75,255,75);
+      textSize(20);
+      text(";-;", pos.x, pos.y-65);
+    }
+    //Makes you follow 45
+    else if (nearUMP){
+      mousePressed = false;
+      vel45 = new PVector(vel9.x+random(-1, 1), vel9.y+random(-1, 1));
+      stroke(200);
+      fill(255, 255, 255);
+      rect(pos.x-10, pos.y-90, 40, 40, 10);
+      fill(75,255,75);
+      textSize(20);
+      text(":D", pos.x, pos.y-65);
+    }
+    //Makes you follow HK
+    else if (nearHK){
+      mousePressed = false;
+      vel45 = new PVector(velHK.x*-1, velHK.y*-1);
+      stroke(200);
+      fill(255, 255, 255);
+      rect(pos.x-10, pos.y-90, 40, 40, 10);
+      fill(75,255,75);
+      textSize(20);
+      text("D:", pos.x, pos.y-65);
+    }
+  }
+  
+  void run(){
+    draw();
+    update();
+  }
+  
+  void draw(){
+    //Makes the characters move with their given velocity
+    loc9.add(vel9);
+    locHK.add(velHK);
+    locG.add(velG);
+    
+    //Generates a new velocity for Char when mouseclicked, will just move otherwise
+    if (mousePressed){
+      vel45 = new PVector(random(-5, 5), random(-5, 5));
+    }
+    else {
+      pos.add(vel45);
+    }
+    
+    //The hitbox detection is janky so this resets the position of the characters
+    //if they get stuck too much
+    //Otherwise this makes the characters bounce off of each other, besides Char
+    if (counterG > 6){
+      locG = new PVector(400+random(-200, 200), 300+random(-150, 150));
+      locHK = new PVector(400+random(-200, 200), 300+random(-150, 150));
+    }
+    else if (locG.dist(locHK) < 120) {
+      velG = new PVector(velG.x*-1, velG.y*-1);
+      velHK = new PVector(velHK.x*-1, velHK.y*-1);
+      counterG++;
+    }
+    if (counter9 > 6){
+      locG = new PVector(400+random(-200, 200), 300+random(-150, 150));
+      loc9 = new PVector(400+random(-200, 200), 300+random(-150, 150));
+      counter9 = 0;
+    }
+    else if (locG.dist(loc9) < 120) {
+      velG = new PVector(velG.x*-1, velG.y*-1);
+      vel9 = new PVector(vel9.x*-1, vel9.y*-1);
+      counter9++;
+    }
+    if (counterHK > 6){
+      loc9 = new PVector(400+random(-200, 200), 300+random(-150, 150));
+      locHK = new PVector(400+random(-200, 200), 300+random(-150, 150));
+      counterHK = 0;
+    }
+    else if (loc9.dist(locHK) < 120) {
+      vel9 = new PVector(vel9.x*-1, vel9.y*-1);
+      velHK = new PVector(velHK.x*-1, velHK.y*-1);
+      counterHK++;
+    }
+    
+    //This prevents them from bouncing out of the screen
+    //With the exception of Char who you can drag out of screen
+    if ((loc9.x > width-50) || (loc9.x < 50)) {
+      vel9.x = vel9.x * -1;
+      counter9++;
+    }
+    if ((loc9.y > height-90) || (loc9.y < 90)) {
+      vel9.y = vel9.y * -1;
+      counter9++;
+    }
+    if ((locHK.x > width-65) || (locHK.x < 65)) {
+      velHK.x = velHK.x * -1;
+      counterHK++;
+    }
+    if ((locHK.y > height-90) || (locHK.y < 90)) {
+      velHK.y = velHK.y * -1;
+      counterHK++;
+    }
+    if ((pos.x > width-64) || (pos.x < 64)) {
+      vel45.x = vel45.x * -1;
+    }
+    if ((pos.y > height-64) || (pos.y < 64)) {
+      vel45.y = vel45.y * -1;
+    }
+    if ((locG.x > width-65) || (locG.x < 65)) {
+      velG.x = velG.x * -1;
+      counterG++;
+    }
+    if ((locG.y > height-62) || (locG.y < 62)) {
+      velG.y = velG.y * -1;
+      counterG++;
+    }
+    
+    ellipseMode(CENTER);
+    imageMode(CENTER);
+    
+    //This determines the animation of Char
+    //If moving with mouse it follows the direction 
+    //If moving with velocity the target determines at which point it switches
+    //from left or right or vice versa
+    if (pos.x < target.x){
+      right = true;
+      left = false;
+    }
+    if (pos.x > target.x){
+      right = false; 
+      left = true;
+    }
+    
+    delay = millis();
+    //This resets the counter of the three characters so they don't teleport
+    //whenever they don't need to.
+    if (delay%11 == 0 || delay%11 == 1 || delay%11 == 2 || delay%11 == 3 || delay%11 == 4){
+      counterHK = 0;
+      counter9 = 0;
+      counterG = 0;
+    }
+    
+    //This is the animation it loops through 9 different frames
+    //the delay%10 determines which frame should appear starting with 0 to 9
+    if (right == true){
+      for (int i = 0; i < 10; i++){
+        if (delay%10 == i){
+          current = imgR[i];
+        }
+      }
+    }
+      
+    if (left == true){
+      for (int i = 0; i < 10; i++){
+        if (delay%10 == i){
+          current = imgL[i];
+        }
+      }
+    }
+    
+    //This continously updates the drawing
+    image(ump, loc9.x,loc9.y);
+    image(hk, locHK.x,locHK.y);
+    image(g, locG.x,locG.y);
+    image(current, pos.x, pos.y);
+    
+    //debug to show hitboxes and target
+    if (debug) {
+      noFill();
+      stroke(0, 255, 0);
+      line(target.x, target.y, pos.x, pos.y);
+      stroke(255, 0, 0);
+      ellipse(target.x, target.y, 10, 10);
+      ellipse(pos.x, pos.y, 120, 120);
+      ellipse(loc9.x, loc9.y, 120, 120);
+      ellipse(locHK.x, locHK.y, 120, 120);
+      ellipse(locG.x, locG.y, 120, 120);
+    }
+  }
+  
+  //Determines the new target location
+  void newLocation(){
+     mx = mouseX;
+     my = mouseY;
+     target = new PVector(mx, my);
+  }
+}
