@@ -1,0 +1,26 @@
+//Yinkan Chen 2021-10-03 Project1 - Virtual Creature
+//Resources:
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week04/Creature03/Creature03.pde
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week04/Creature03/Food.pde
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week04/Creature03/Steve.pde
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week04/ImageArray01/ImageArray01.pde
+//https://processing.org
+Char FourFive;
+Cake cake;
+int cakeCount = 100;
+PImage bg;
+
+void setup() { 
+  size(800, 600, P2D);
+  bg = loadImage("dorm.png");
+  bg.resize(800, 600);
+  frameRate(30);
+  FourFive = new Char(random(width), random(height));
+  cake = new Cake(random(width), random(height), cakeCount);
+}
+
+void draw() {
+  background(bg);
+  cake.run();
+  FourFive.run();
+}
