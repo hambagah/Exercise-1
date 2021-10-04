@@ -1,0 +1,88 @@
+//The cakes spawn where ever they want on the screen so if it seems like they're
+//teleporting all over the place it's just them spawning inside the character's
+//hitbox
+float xcord, ycord;
+int eat, count, cakeHK, cake9, cake45, cakeG;
+PImage img;
+PVector posC;
+boolean eaten = false;
+class Cake{
+   Cake (float x, float y, float z){
+     img = loadImage("cake.png");
+     img.resize(100, 100);
+     posC = new PVector(x, y);
+     count = int(z);
+   }
+   
+   void run(){
+     eat = cakeG+cake45+cake9+cakeHK;
+     draw();
+     update();
+   }
+   
+   void update(){
+     contact();
+   }
+   
+   //This checks for the distance between characters and the cake
+   //If they're close enough the cake will be scored to them
+   void contact(){
+     if (posC.dist(locG) < 120){
+       eaten = true;
+       cakeG++;
+     }
+     if (posC.dist(locHK) < 120){
+       eaten = true;
+       cakeHK++;
+     }
+     if (posC.dist(loc9) < 120){
+       eaten = true;
+       cake9++;
+     }
+     if (posC.dist(pos) < 120){
+       eaten = true;
+       cake45++;
+     }
+   }
+   
+   //This draws the cake and the boxes with texts and continously updates them
+   void draw(){
+    stroke(200);
+    fill(255, 255, 255);
+    rect(630, 20, 150, 180, 10);
+    textSize(20);
+    fill(0);
+    text("Cakes Eaten:", 645, 60);
+    text("HK: " + cakeHK, 645, 90);
+    text("G11: " + cakeG, 645, 120);
+    text("Nine: " + cake9, 645, 150);
+    text("45: " + cake45, 645, 180);
+    stroke(200);
+    fill(255, 255, 255);
+    rect(20, 20, 300, 60, 10);
+    textSize(20);
+    fill(0);
+    text("Rolling for " + delay/1000 + " seconds long.", 35, 60);
+     
+     //Shows the hitbox of the cakes and the amount of cakes eaten in console
+     if (debug == true){
+       stroke(255, 0, 0);
+       ellipse(posC.x, posC.y, 100, 100);
+       println(eat);
+       println(count);
+     }
+     //This stops cakes from spawning
+     if (eat > count){
+       
+     }
+     //This spawns the first image
+     else if (eaten == false){
+       image(img, posC.x, posC.y);
+     }
+     //This spawns any subsequently spawning cakes
+     else {
+       posC = new PVector(random(width), random(height));
+       eaten = false;
+     }
+   }
+}
