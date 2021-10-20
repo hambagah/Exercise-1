@@ -1,0 +1,43 @@
+
+class Splash{
+PVector ball, speed, gravity;
+int ballx, bally, set;
+  Splash(int x, int y, int q, int w, int h){
+    set = h;
+    ball = new PVector(x, y);
+    ballx = q;
+    bally = w;
+    speed = new PVector(random(-50, 50), 25);
+    gravity = new PVector(0, 0.5);
+  }
+  
+  void run(){
+   draw(); 
+  }
+  
+  void draw(){
+    if (set== 8 || set== 9 || set== 10 || set== 11 || set== 12 || set== 13 || set== 14 || set== 15 || set== 16 || set== 17){
+      stroke(0, 0, 0);
+      fill(255, 255, 255);
+    }
+    if (set== 6 || set== 7 || set== 18 || set== 19){
+      fill(255, 130, 130);
+      stroke(255, 127, 0);
+    }
+    if (set== 0 || set== 1 ||  set== 2 || set== 3 || set== 4 || set== 5 || set== 20 || set== 21 || set== 22 || set== 23 || set== 24){
+      fill(0, 0, 0);
+      stroke(255, 255, 255);
+    }
+    
+    ball.add(speed);
+    speed.add(gravity);
+    if ((ball.x > width) || (ball.x < 0)) {
+      speed.x = speed.x * -1;
+    }
+    if (ball.y > height-160) {
+      speed.y = speed.y * -0.95; 
+      ball.y = height-160;
+    }
+    ellipse(ball.x, ball.y, ballx, bally);
+  }
+}
