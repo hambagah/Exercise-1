@@ -154,7 +154,7 @@ void draw(){
     stroke(200);
     rectMode(CENTER);
     fill(255, 255, 255);
-    rect(width/2, height/2-30, 300, 210, 10);
+    rect(width/2, height/2, 300, 210, 10);
     fill(0);
     textSize(30);
     text("GAME OVER", 160, height/2-65);
