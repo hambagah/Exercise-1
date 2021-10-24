@@ -1,0 +1,57 @@
+//This is the beam class
+//This determines what is fired and their stats.
+//Beams cannot be stopped, unless they go off screen or the player takes the hit.
+class Beam {
+  PVector bpos, medspeed, pewpos;
+  boolean existb = true;
+  String size;
+  Beam(float x, float y, String type){
+    bpos = new PVector(x, y);
+    size = type;
+  }
+  
+  void update(){
+    //The size of the beam determines it hitbox
+    if (size == "big"){
+      if (bpos.dist(pos)< 25 && alive == true){
+        alive = false;
+        existb = false;
+      }
+    }
+    if (size == "medium"){
+      if (bpos.dist(pos)< 15 && alive == true){
+        alive = false;
+        existb = false;
+      }
+    }
+  }
+  
+  void draw(){
+    if (debug == true && size == "big"){
+      noFill();
+      stroke(255, 0, 0);
+      ellipse(bpos.x, bpos.y, 40, 40 );
+    }
+    else if (debug == true && size == "medium"){
+      noFill();
+      stroke(255, 0, 0);
+      ellipse(bpos.x, bpos.y, 20, 20);
+    }
+    
+    if (size == "big"){
+      image(beam2, bpos.x, bpos.y, 30, 30);
+      beam2.loop();
+      bpos.add(0, 2);
+    }
+    else if (size == "medium"){
+      image(beam2, bpos.x, bpos.y, 20, 20);
+      beam2.loop();
+      bpos.add(0, 3);
+    }
+  }
+  
+  void run(){
+    update();
+    draw();
+  }
+}
