@@ -1,0 +1,38 @@
+//Background class
+//Simple class that just adds a background 
+class Background {
+  PImage border, bg1, bg2;
+  PVector borderpos, bgpos1, bgpos2;
+  Background(){
+    border = loadImage("border.png");
+    bg1 = loadImage("galaxy.png");
+    bg2 = bg1;
+    bgpos1 = new PVector(width/2, 0);
+    bgpos2 = new PVector(width/2, -2000);
+    borderpos = new PVector(width/2, 300);
+  }
+  
+  void draw(){
+    //This resets the background's position so they're correctly aligned and loop
+    //seemlessly everything.
+    if (borderpos.y > 400){
+      borderpos.y = 300;
+    }
+    if (bgpos1.y > 2000){
+      bgpos1.y = bgpos2.y-2000;
+    }
+    if (bgpos2.y > 2000){
+      bgpos2.y = bgpos1.y-2000;
+    }
+    image(bg1, bgpos1.x, bgpos1.y, 500, 2000);
+    image(bg2, bgpos2.x, bgpos2.y, 500, 2000);
+    image(border, borderpos.x, borderpos.y, 500, 1200);
+    borderpos.add(0, 3);
+    bgpos1.add(0, 2);
+    bgpos2.add(0, 2);
+  }
+  
+  void run(){
+    draw(); 
+  }
+}
