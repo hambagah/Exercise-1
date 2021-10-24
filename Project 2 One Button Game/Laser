@@ -1,0 +1,26 @@
+boolean existl = true;
+PVector pewpos;
+class Laser{
+  PImage pew;
+  Laser(float x, float y){
+    pew = loadImage("laser.png");
+    pewpos = new PVector(x, y);
+  }
+  
+  void run(){
+    draw(); 
+  }
+  
+  void draw(){
+    if (debug == true){
+      noFill();
+      stroke(255, 0, 0);
+      ellipse(pewpos.x, pewpos.y, 35, 20);
+    }
+    
+    if (existl == true){
+      image(pew, pewpos.x, pewpos.y, 35, 20);
+      pewpos.add(0,-15);
+    }
+  }
+}
