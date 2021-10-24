@@ -1,0 +1,84 @@
+//Player Class
+//Creates everything in the player class and includes controls and determines -
+//when the laser fires.
+int x = 40, y = 48, counter;
+boolean alive;
+PVector pos;
+
+class Player {
+  
+  int direction = 0;
+  PVector xspeed;
+  boolean bounds, runLaser;
+  PImage ship;
+  Gif gif;
+  Laser laser;
+  
+  Player(int xpos, int ypos, Gif fire){
+    //ypos is constant
+    //The only thing changing is it's xaxis
+    alive = true;
+    ship = loadImage("ship.png");
+    gif = fire;
+    gif.loop();
+    pos = new PVector(xpos, ypos);
+    xspeed = new PVector(4, 0);
+    imageMode(CENTER);
+    ellipseMode(CENTER);
+  }
+  
+  void run(){
+    draw();
+    keyPressed();
+    bounds();
+  }
+  
+  void draw(){
+    //Fires a laser every second
+    if (counter == 1){
+      counter = 0; 
+      runLaser = true;
+      existl = true;
+      laser = new Laser(pos.x, pos.y);
+    }
+    
+    if (debug == true){
+      noFill();
+      stroke(255, 0, 0);
+      ellipse(pos.x, pos.y, 50, 50);
+    }
+    
+    //Fire gif follows behind the player image
+    fill (150, 0, 0);
+    image(ship, pos.x, pos.y, x, y);
+    image(gif, pos.x, pos.y+y/2, x, y/2);
+    //Only runs if laser exists to prevent crashing
+    if (runLaser == true){
+      laser.run();
+    }
+  }
+  
+  void bounds(){
+    if (pos.x > width - x/2){
+      bounds = true;
+      xspeed.x = xspeed.x * -1;
+    }
+    else if (pos.x < 0 + x/2){
+      bounds = true;
+      xspeed.x = xspeed.x * -1; 
+    }
+    else {
+      bounds = false; 
+    }
+  }
+  
+  void keyPressed(){
+    if (keyPressed && key == ' ' && bounds == false){
+      xspeed.x = -4;
+    }
+    else if (bounds == false){
+      xspeed.x = 4;
+    }
+    pos.add(xspeed);  
+  }
+}
