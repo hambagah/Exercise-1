@@ -1,0 +1,157 @@
+//This is the enemy class
+//This determines what enemy spawns, when enemy projectiles are fired, 
+//and their stats.
+//ebeam is global so that the beams don't disappear when the enemy dies
+boolean ebeam;
+
+class Enemy{
+  float type;
+  int enemyX, enemyY, hp = 3, ecounter;
+  boolean existe = true;
+  boolean big, medium;
+  int clock1, clock2;
+  Gif enemy;
+  PVector epos, espeed;
+  
+  Enemy(float x){
+    //This determines the enemy spawn position and also their enemy type
+    epos = new PVector(x, -50);
+    type = random(0, 3);
+    //Medium enemy class
+    //Approaches slowly, one hit kill, 40% chance of appearing
+    //Fire projectiles downwards, moves fast sideways
+    if (type <= 1.4){
+      enemy = medGif;
+      enemyX = enemy.width*2;
+      enemyY = enemy.height*2;
+      medium = true;
+      if (epos.x >= width/2){
+          espeed = new PVector(random(-3, -5), random(.5, .7));
+      }
+      else if (epos.x < width/2){
+          espeed = new PVector(random(3, 5), random(.5, .7));
+      }
+    }
+    //Small enemy class
+    //Goes down fast, goes sideways slowly, one hit kill, 33.33% chance of appearing
+    else if (type <= 2.4){
+      enemy = smallGif;
+      enemyX = enemy.width*2;
+      enemyY = enemy.height*2;
+      if (epos.x >= width/2){
+          espeed = new PVector(random(-2, -4), random(7, 10));
+      }
+      else if (epos.x < width/2){
+          espeed = new PVector(random(2, 4), random(7, 10));
+      }
+    }
+    //Large enemy class
+    //Stays near up top the screen, fires down projectiles, takes three hits - 
+    //Large hitbox, appears less frequently, 26.67% chance of appear
+    else if (type > 2.4){
+      enemy = bigGif;
+      enemyX = enemy.width*2;
+      enemyY = enemy.height*2;
+      big = true;
+      if (epos.x >= width/2){
+          espeed = new PVector(-2, 1);
+      }
+      else if (epos.x < width/2){
+          espeed = new PVector(2, 1);
+      }
+    }
+  }
+  
+  void update(){
+    //This makes the enemy bounce off the wall
+    if (epos.x > width - enemyX/2){
+      espeed.x = espeed.x * -1;
+    }
+    else if (epos.x < 0 + enemyX/2){
+      espeed.x = espeed.x * -1; 
+    }
+    
+    //This is the hitbox for the large enemy class
+    //They take three hits to take down
+    //They stop moving down the y-axis once they surpass 80
+    if (big == true){
+       if (existe == true) {
+         if (epos. y > 80){
+           espeed = new PVector(espeed.x, 0);
+         }
+         if (hp == 0){
+           existe = false;
+           edestroyed++;
+           pewpos = new PVector(1000, 0);
+           existl = false;
+         }
+         if (pewpos.dist(epos) < 35 && existe == true){
+           pewpos = new PVector(1000, 0);
+           existl = false;
+           hp--;
+         }
+      }
+    }
+    
+    //This is the hitbox for small and medium size enemy class
+    if (big == false){
+      if (epos.dist(pos)< 40 && alive == true){
+          alive = false;
+          existe = false;
+        }
+        if (existe == true) {
+          if (pewpos.dist(epos) < 35 && existe == true){
+            existe = false;
+            edestroyed++;
+            pewpos = new PVector(1000, 1000);
+            existe = false;
+          }
+        }
+    }
+  }
+  
+  void draw(){
+    //The clock in the main class doesn't work with the enemy class.
+    //So I made a new one in here just to create beams.
+    clock1 = second();
+    if (clock1 != clock2) {
+      clock2 = clock1;
+      ecounter++;
+      println(ecounter);
+    }
+  
+    if (debug == true){
+      noFill();
+      stroke(255, 0, 0);
+      ellipse(epos.x, epos.y, enemyX, 50);
+    }
+    
+    //This generates the beams every two seconds, and fire different beams 
+    //depending on enemy type.
+    //Small enemy types don't fire
+    //Medium enemy types fire small beams down the y-axis
+    //Big enemy types fire larger beams down the y-axis
+    if (big == true){
+        if (ecounter == 2){
+          ebeam = true;
+          beams.add(new Beam(epos.x, epos.y, "big"));
+          ecounter = 0;
+        }
+    }
+    else if (medium == true){
+        if (ecounter == 2){
+          ebeam = true;
+          beams.add(new Beam(epos.x, epos.y, "medium"));
+          ecounter = 0;
+        }
+    }
+    enemy.loop();
+    image(enemy, epos.x, epos.y, enemyX, enemyY);
+    epos.add(espeed);
+  }
+  
+  void run(){
+    update();
+    draw();
+  }
+}
