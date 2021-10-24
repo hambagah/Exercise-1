@@ -1,0 +1,79 @@
+//Meteor class
+//Enemy type that spawns regularly that block shots and destroy the player
+class Meteor {
+    
+    float xaxis, random;
+    boolean exist = true;
+    PVector meteorspeed, meteorpos;
+    PImage rock1, rock2, rock3, rock4, current;
+    int mx, my;
+    
+    Meteor(float xpos){
+      //xposition is randomly generated
+      xaxis = xpos;
+      meteorpos = new PVector(xaxis, -100);
+      //If the meteor is to the right, it'll go towards the left
+      //If the meteor is to the left, it'll go towards the right
+      if (xpos >= width/2){
+        meteorspeed = new PVector(random(0, -2), random(2, 5));
+      }
+      else if (xpos < width/2){
+        meteorspeed = new PVector(random(0, 2), random(2, 5));
+      }
+      //Generates different looking meteors
+      rock1 = loadImage("meteor1.png");
+      rock2 = loadImage("meteor2.png");
+      rock3 = loadImage("meteor3.png");
+      rock4 = loadImage("meteor4.png");
+      random = random(0, 4);
+      if (random <= 1){
+        current = rock1;
+      }
+      else if (random > 1 && random <= 2){
+        current = rock2;
+      }
+      else if (random > 2 && random <= 3){
+        current = rock3;
+      }
+      else if (random > 3){
+        current = rock4;
+      }
+      mx = current.width;
+      my = current.height;
+    }
+     
+    void update(){
+      //This is the collision between the player and meteor
+      //This destroys the player and meteor
+      if (meteorpos.dist(pos)< 40 && alive == true){
+        alive = false;
+        exist = false;
+      }
+      //This destroys the meteor if it comes into contact with the laser
+      //This also counts how many meteor you destroyed
+      if (existl == true) {
+        if (pewpos.dist(meteorpos) < 35 && exist == true){
+          exist = false;
+          destroyed++;
+          pewpos = new PVector(1000, 0);
+          existl = false;
+        }
+      }
+    }
+    
+    void draw(){
+      if (debug == true){
+        noFill();
+        stroke(255, 0, 0);
+        ellipse(meteorpos.x, meteorpos.y, mx, my);
+      }
+      
+      image(current, meteorpos.x, meteorpos.y, mx, my);
+      meteorpos.add(meteorspeed);
+    }
+    
+    void run(){
+      draw();
+      update();
+    }
+}
