@@ -1,0 +1,167 @@
+//Main class
+//Runs most of everything
+//Sets up the background, player, meteors, enemies, and enemy beams.
+//Resources: 
+//https://github.com/eecs17xx/eecs1710-2021f/tree/main/Week05/Clock01
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week05/Frogger01/Frogger01.pde
+//https://github.com/eecs17xx/eecs1710-2021f/blob/main/Week05/GifExample01/GifExample01.pde
+//All image assets were created by me using pixilart.com
+import gifAnimation.*;
+int second, lastSecond, seconds, destroyed, edestroyed, enemyspawn;
+boolean debug = false;
+Player player;
+Background background;
+ArrayList<Meteor> meteors;
+ArrayList<Beam> beams;
+ArrayList<Enemy> enemies;
+float chance, enemychance;
+Gif fire, beam2, bigGif, medGif, smallGif;
+
+void setup(){
+  size(500, 800, P2D);
+  beam2 = new Gif(this, "beam2.gif");
+  fire = new Gif(this, "fire.gif");
+  bigGif = new Gif(this, "big.gif");
+  medGif = new Gif(this, "med.gif");
+  smallGif = new Gif(this, "small.gif");
+  player = new Player(width/2, height-50, fire);
+  background = new Background();
+  meteors = new ArrayList<Meteor>();
+  enemies = new ArrayList<Enemy>();
+  //beams is kept in the main class, so that they don't disappear when the enemy
+  //is destroyed
+  beams = new ArrayList<Beam>();
+}
+
+void draw(){
+  //The game only runs if the player is alive
+  if (alive == true){
+    background(130, 250, 170);
+    second = second();
+    if (second != lastSecond) {
+      //This determines when the player fires, when the enemy spawns,
+      //and when the meteor spawns
+      lastSecond = second;
+      counter++;
+      enemyspawn++;
+      chance = random(0,1);
+      if (chance <= 0.05){
+        meteors.add(new Meteor(random(25, width-25)));
+      }
+      if (chance <= 0.1){
+        meteors.add(new Meteor(random(25, width-25)));
+      }
+      if (chance <= 0.2){
+        meteors.add(new Meteor(random(25, width-25)));
+      }
+      if (chance >= 0.8){
+        meteors.add(new Meteor(random(25, width-25)));
+      }
+      if (chance >= 0.9){
+        meteors.add(new Meteor(random(25, width-25)));
+      }
+      seconds++;
+    }
+    background.run();
+    player.run();
+    
+    //This determines if enemies spawn every 3 seconds.
+    if (enemyspawn == 3){
+      enemychance = random(0, 1);
+      if (enemychance >= 0.9){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance >= 0.8){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance >= 0.7){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance <= 0.5){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance <= 0.3){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance <= 0.2){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      if (enemychance <= 0.1){
+        enemies.add(new Enemy(random(60, width-60)));
+      }
+      enemyspawn = -1;
+    }
+    
+    //This runs every enemy on screen, when they go off screen, they are deleted -
+    //from the game
+    for (Enemy enemy : enemies){
+      enemy.run();
+      if (enemy.epos.y > height+50) enemy.existe = false;
+    }
+    
+    //This grabs the enemy existe value, removing if it comes out false
+    for (int i=enemies.size()-1; i>=0; i--) {
+      if (!enemies.get(i).existe) {
+        enemies.remove(i);
+      }
+    }
+    
+    //Only runs if ebeam is true to prevent the game from crashing
+    if (ebeam == true){
+      for (Beam beam : beams){
+        //Runs all the beams on screen, and changes existb value to false if -
+        //off screen.
+        beam.run();
+        if (beam.bpos.y > height+50) beam.existb = false;
+        if (beam.bpos.y < 0 - 50) beam.existb = false;
+        if (beam.bpos.x > width+50) beam.existb = false;
+        if (beam.bpos.x < 0 - 50) beam.existb = false;
+      }
+      
+      //Removes beams if the existb value comes out false.
+      for (int i=beams.size()-1; i>=0; i--) {
+         if (!beams.get(i).existb) {
+           beams.remove(i);
+         }
+       } 
+    }
+    
+    if (ebeam == true){
+      for (Beam beam : beams){
+          beam.run();
+        }
+        
+      for (int i=beams.size()-1; i>=0; i--) {
+         if (!beams.get(i).existb) {
+           beams.remove(i);
+         }
+       } 
+    }
+    
+    for (Meteor meteor : meteors){
+      meteor.run();
+      if (meteor.meteorpos.y > height+50) meteor.exist = false;
+    }
+    
+    for (int i=meteors.size()-1; i>=0; i--) {
+      if (!meteors.get(i).exist) {
+        meteors.remove(i);
+      }
+    }
+  }
+  else {
+    //Game over screen
+    stroke(200);
+    rectMode(CENTER);
+    fill(255, 255, 255);
+    rect(width/2, height/2-30, 300, 210, 10);
+    fill(0);
+    textSize(30);
+    text("GAME OVER", 160, height/2-65);
+    textSize(20);
+    fill(0);
+    text("Survived for " + seconds + " seconds", 150, height/2-25);
+    text("Destroyed " + destroyed + " meteors", 150, height/2+20);
+    text("Destroyed " + edestroyed + " enemies", 150, height/2+65);
+  }
+}
