@@ -1,0 +1,19 @@
+Letters l;
+String input = "ab";
+
+void setup() {
+  size(800, 600, P2D);
+  l = new Letters(input, 0, height/2);
+}
+
+void keyPressed(){
+  if (keyPressed == true){
+    input += key;
+    l = new Letters(input, 0, height/2);
+  }
+}
+
+void draw() {
+  background(127);
+  l.run(); 
+}
