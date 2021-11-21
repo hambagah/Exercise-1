@@ -20,7 +20,7 @@ class Square {
   }
   
   void update(){
-    if (mousePressed){
+    if (mousePressed && mouseButton != LEFT){
       key = '1'; 
     }
     //This makes it so that only one pixel can be dragged at a time
